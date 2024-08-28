@@ -12,3 +12,4 @@ CREATE TABLE blogs (
 insert into blogs (author, url, title) values ('Matti Leinonen', 'www.programmingworld.com/react', 'Learning React');
 insert into blogs (author, url, title) values ('Liisa Lappalainen', 'www.programmingworld.com/docker', 'Docker');
 insert into blogs (author, url, title) values ('Matti Leinonen', 'www.programmingworld.com/python', 'About Python');
+

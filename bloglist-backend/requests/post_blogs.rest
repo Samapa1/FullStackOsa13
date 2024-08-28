@@ -1,9 +1,8 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-
+Authorization: Bearer xxx
 {
- "author": "Liisa Lappalainen",
- "url": "www.programmingworld.com/scala",
- "title": "Learning Scala"
+ "author": "SP",
+ "url": "http://www.programming.com/blogs/Python",
+ "title": "Python"
 }
-
