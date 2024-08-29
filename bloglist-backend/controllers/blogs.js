@@ -1,21 +1,50 @@
 const router = require('express').Router()
 const { User } = require('../models')
 const { Blog } = require('../models')
-// const { tokenExtractor } = require('../util/middleware')
 const middleware = require('../util/middleware')
 const tokenExtractor = middleware.tokenExtractor
+const { Op } = require('sequelize')
+const { sequelize } = require('../util/db')
 
 
 router.get('/', async (req, res) => {
-    const blogs = await Blog.findAll()
-    res.json(blogs)
+  let where = {}
+
+  if (req.query.search) {
+    where = {
+        [Op.or]: [
+          {
+            title: {
+              [Op.substring]: req.query.search
+            }
+          },
+          {
+            author: {
+              [Op.substring]: req.query.search
+            }
+          }
+        ]
+    }
+  }
+
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ['userId'] },
+    include: {
+      model: User,
+      attributes: ['name'],
+    },
+    where,
+    order: [ 
+      ['likes', 'DESC'] 
+    ]
+  
+  })
+  res.json(blogs)
   })
   
 router.post('/', tokenExtractor, async (req, res, next) => {
   try {
     console.log(req.body)
-    // const user = await User.findOne()
-    // const blog = await Blog.create({ ...req.body, userId: user.id })
     const user = await User.findByPk(req.decodedToken.id)
     const blog = await Blog.create({...req.body, userId: user.id})
     res.json(blog)
@@ -25,21 +54,24 @@ router.post('/', tokenExtractor, async (req, res, next) => {
   }
 })
 
-// router.post('/', async (req, res, next) => {
-//   try {
-//     console.log(req.body)
-//     const blog = await Blog.create(req.body)
-//     res.json(blog)
-//   }
-//   catch {
-//     next(error)
-//   }
-// })
-
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', tokenExtractor, async (req, res) => {
+  try {
+    console.log("deletoidaan!")
     const blog = await Blog.findByPk(req.params.id)
-    await blog.destroy()
-    res.status(204).end()
+    console.log(blog.userId)
+    console.log(req.decodedToken.id)
+    if (blog.userId === req.decodedToken.id) {
+      await blog.destroy()
+      res.status(204).end()
+    }
+    else {
+      res.status(401).end()
+    }
+  }
+  catch(error) {
+    console.log(error)
+    next(error)
+  } 
   })
 
 router.put('/:id', async (req, res, next) => {
@@ -61,3 +93,4 @@ router.put('/:id', async (req, res, next) => {
   })
 
 module.exports = router
+
