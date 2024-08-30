@@ -8,7 +8,10 @@ router.get('/', async (req, res) => {
       group: [['author']],
       attributes: ['author', [sequelize.fn('SUM', sequelize.col('likes')), 'likes'], [sequelize.fn('COUNT', sequelize.col('author')), 'blogs']],  
       include: [{model: User, attributes:[]}],
-      raw:true
+      raw:true,
+      order: [ 
+        ['likes', 'DESC'] 
+      ]
     })
     res.json(blogs)
   })

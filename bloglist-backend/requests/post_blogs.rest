@@ -1,11 +1,12 @@
-POST http://localhost:3001/api/blogs
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
 Authorization: Bearer xxx
 
 {
  "author": "SP",
- "url": "http://www.programming.com/blogs/Python2",
- "title": "PythonTest"
+ "url": "http://www.programming.com/blogs/Java",
+ "title": "Java",
+ "year": 1990
 }
 
 

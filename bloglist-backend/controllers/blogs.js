@@ -49,7 +49,8 @@ router.post('/', tokenExtractor, async (req, res, next) => {
     const blog = await Blog.create({...req.body, userId: user.id})
     res.json(blog)
   }
-  catch {
+  catch(error) {
+    console.log(error)
     next(error)
   }
 })

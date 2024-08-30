@@ -24,11 +24,25 @@ Blog.init({
   likes: {
     type: DataTypes.INTEGER,
     defaultValue: 0
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    default: false,
+    validate: {
+      min: {
+          args: [1991],
+          msg: "year should be in the range from 1991 to current year"
+      },
+      max: {
+        args: [2024],
+        msg: "year should be in the range from 1991 to current year"
+    }
+  }
   }
 }, {
   sequelize,
   underscored: true,
-  timestamps: false,
+  timestamps: true,
   modelName: 'blog'
 })
 
