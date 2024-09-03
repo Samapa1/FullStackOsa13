@@ -37,7 +37,12 @@ Blog.init({
         args: [2024],
         msg: "year should be in the range from 1991 to current year"
     }
-  }
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false, 
+    references: { model: 'users', key: 'id' },
+    },
   }
 }, {
   sequelize,

@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const { Blog } = require('../models')
 const { User } = require('../models')
+const { Readinglists } = require('../models')
 
 router.get('/', async (req, res) => {
 const users = await User.findAll({
@@ -19,7 +20,6 @@ router.post('/', async (req, res, next) => {
   } catch(error) {
     console.log(error)
     next(error)
-    // return res.status(400).json({ error })
   }
 })
 
@@ -41,21 +41,47 @@ router.put('/:username', async (req, res) => {
     catch(error) {
         console.log(error)
         next(error)
-        // return res.status(400).json({ error })
     }
 })
 
-// router.get('/:username', async (req, res) => {
-//     const user = await User.findOne({
-//         where: {
-//             username: req.params.username
-//         }
-//         })
-//   if (user) {
-//     res.json(user)
-//   } else {
-//     res.status(404).end()
-//   }
-// })
+router.get('/:id', async (req, res) => {
+  const user = await User.findOne({ 
+    where: {
+      id: req.params.id
+  },
+    attributes: { exclude: ['createdAt', 'updatedAt'] } ,
+  //    include:[{
+  //       model: Blog,
+  //       as: 'readings',
+  //       attributes: { exclude: ['userId', 'createdAt', 'updatedAt']},
+  //       through: {
+  //         attributes: ['read', 'id']
+  //       },
+
+  // }]
+
+    include:[{
+        model: Blog,
+        as: 'readings',
+        attributes: { exclude: ['userId', 'createdAt', 'updatedAt']},
+        through: {
+          attributes: []
+        },
+        include: [{
+            model: Readinglists,
+            as: 'readinglists',
+            attributes: ['read', 'id'],
+        }]
+      }, 
+
+    ]
+  })
+
+  if (user) {
+    res.json(user)
+  } else {
+    res.status(404).end()
+  }
+})
 
 module.exports = router
