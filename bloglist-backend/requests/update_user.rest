@@ -1,0 +1,9 @@
+PUT http://localhost:3003/api/users/timo@gmail.com
+Content-Type: application/json
+Authorization: Bearer xxx
+
+{
+ "name": "TimoT"
+}
+
+

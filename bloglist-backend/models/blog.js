@@ -38,7 +38,7 @@ Blog.init({
         msg: "year should be in the range from 1991 to current year"
     }
   },
-  user_id: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false, 
     references: { model: 'users', key: 'id' },

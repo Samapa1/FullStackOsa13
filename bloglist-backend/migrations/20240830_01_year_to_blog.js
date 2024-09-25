@@ -1,6 +1,8 @@
 const { DataTypes, DATE } = require('sequelize')
-  const cdate = new DATE()
-  const currentYear = cdate.getFullYear()
+  // const cdate = Date.now()
+  // console.log(cdate)
+  // const currentYear = cdate.getFullYear()
+  let currentYear = new Date().getFullYear()
 module.exports = {
 
   up: async ({ context: queryInterface }) => {

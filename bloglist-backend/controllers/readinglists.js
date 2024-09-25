@@ -1,10 +1,9 @@
 const router = require('express').Router()
-// const { User } = require('../models')
-// const { Blog } = require('../models')
 const { Readinglists } = require('../models')
-// const middleware = require('../util/middleware')
+const middleware = require('../util/middleware')
+const tokenExtractor = middleware.tokenExtractor
 
-router.post('/', async (req, res, next) => {
+router.post('/', tokenExtractor, async (req, res, next) => {
     try {
       console.log(req.body)
       const item = await Readinglists.create(req.body)
@@ -15,5 +14,28 @@ router.post('/', async (req, res, next) => {
       next(error)
     }
   })
+
+router.put('/:id', tokenExtractor, async (req, res, next) => {
+  try {
+    const item = await Readinglists.findByPk(req.params.id)
+    if (item) {
+      if (item.userId ===  req.decodedToken.id) {
+      item.read = req.body.read
+      await item.save()
+      res.json(item)
+      }
+      else {
+        res.status(401).end()
+      }
+  }
+  else {
+      res.status(404).end()
+  }
+  }
+  catch(error) {
+    console.log(error)
+    next(error)
+  }
+})
 
   module.exports = router

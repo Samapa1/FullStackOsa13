@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../util/config')
+const Session = require('../models/session')
+const User = require('../models/user')
 
 const errorHandler = (error, request, response, next) => {
     console.log("virheidenkäsittelymiddleware")
@@ -20,18 +22,25 @@ const errorHandler = (error, request, response, next) => {
     next(error)
   }
 
-  const tokenExtractor = (req, res, next) => {
+  const tokenExtractor = async (req, res, next) => {
     const authorization = req.get('authorization')
-    if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    const session = await Session.findOne({ where: { token: authorization.substring(7) }})
+    if (authorization && authorization.toLowerCase().startsWith('bearer ') && session) {
       try {
-        console.log(authorization.substring(7))
         req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+        console.log(req.decodedToken)
+        const user = await User.findByPk(req.decodedToken.id)
+        console.log(user)
+        if (user.disabled) {
+          return res.status(401).json({error: 'user disabled'})
+        }
+
       } catch (error){
         console.log(error)
         return res.status(401).json({ error: 'token invalid' })
       }
     } else {
-      return res.status(401).json({ error: 'token missing' })
+      return res.status(401).json({ error: 'token missing or expired' })
     }
     next()
   }
